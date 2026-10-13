@@ -3,74 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ctrl_Alt_Evac | Emergency Dashboard</title>
+    <title>Exopath | AI Emergency Evacuation Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
-        .container { max-width: 800px; margin: auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        h1 { color: #38bdf8; text-align: center; }
-        .card { background: #334155; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        select, button { padding: 10px; font-size: 16px; border-radius: 5px; border: none; margin-top: 10px; width: 100%; }
-        select { background: #cbd5e1; color: #0f172a; font-weight: bold; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0b0f19; color: #f1f5f9; padding: 20px; margin: 0; }
+        .container { max-width: 850px; margin: auto; background: #1e293b; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        .header { text-align: center; margin-bottom: 25px; }
+        h1 { color: #38bdf8; margin: 0; font-size: 2.2em; letter-spacing: -1px; }
+        .tagline { color: #94a3b8; font-size: 0.95em; margin-top: 5px; }
+        .card { background: #0f172a; padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px solid #1e293b; }
         .safe { color: #4ade80; font-weight: bold; }
+        .warning { color: #fbbf24; font-weight: bold; }
         .danger { color: #f87171; font-weight: bold; }
-        .box { background: #0f172a; padding: 15px; border-radius: 6px; margin-top: 15px; font-family: monospace; }
+        .box { background: #111827; padding: 18px; border-radius: 8px; margin-top: 15px; font-family: 'Courier New', Courier, monospace; border-left: 4px solid #38bdf8; font-size: 14px; line-height: 1.5; }
+        .badge { display: inline-block; background: #0284c7; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🚨 Ctrl_Alt_Evac</h1>
-    <p style="text-align: center; color: #94a3b8;">AI Indoor Emergency Routing & Hazard Response System</p>
+    <div class="header">
+        <div class="badge">LIVE IoT MONITORING</div>
+        <h1>Exopath</h1>
+        <div class="tagline">Multimodal Early Detection & Dynamic Indoor Evacuation System</div>
+    </div>
     
     <div class="card">
-        <h3>Simulation Control Panel</h3>
-        <label>Select Building Zone:</label>
-        <select id="zoneSelect" onchange="updateSystem()">
-            <option value="zone1">Zone A: Main Lobby</option>
-            <option value="zone2">Zone B: West Wing Corridor</option>
-            <option value="zone3">Zone C: Underground Metro Concourse</option>
-        </select>
-
-        <label style="margin-top: 15px; display: block;">Simulate Hazard Status:</label>
-        <select id="statusSelect" onchange="updateSystem()">
-            <option value="clear">🟢 All Clear (Normal Operations)</option>
-            <option value="moderate">⚠️ Moderate Smoke Detected</option>
-            <option value="critical">🔥 Critical Hazard / Fire Blockage</option>
-        </select>
+        <h3 style="margin-top:0; color:#e2e8f0;">🌐 Hardware Connection Status</h3>
+        <p id="connStatus" style="color: #38bdf8; font-weight: bold;">Connecting to IoT Sensor Network...</p>
     </div>
 
     <div class="card">
-        <h3>Live System Output & Routing Map</h3>
-        <p id="statusText" class="safe">Status: Normal operations. Standard dynamic routing active.</p>
+        <h3 style="margin-top:0; color:#e2e8f0;">📊 Live System Output & Routing Map</h3>
+        <p id="statusText" class="safe">Status: Checking cloud telemetry...</p>
         <div class="box" id="routeOutput">
-            [System Log] All zones clear.<br>
-            -> Standard Path Active: Exit Gate 1 & 2 open.
+            [Exopath Core Engine] Initializing stream from Firebase database...
         </div>
     </div>
 </div>
 
 <script>
-    function updateSystem() {
-        const zone = document.getElementById('zoneSelect').value;
-        const status = document.getElementById('statusSelect').value;
-        const statusText = document.getElementById('statusText');
-        const routeOutput = document.getElementById('routeOutput');
+    // PASTE YOUR FIREBASE URL BELOW (keep the /status.json at the end)
+    const FIREBASE_URL = "https://exopath-iot-default-rtdb.asia-southeast1.firebasedatabase.app//status.json";
 
-        if (status === 'clear') {
-            statusText.className = 'safe';
-            statusText.innerHTML = "Status: Normal operations. Standard dynamic routing active.";
-            routeOutput.innerHTML = "[System Log] Zone monitoring normal.<br>-> Path Clear: Direct route to Main Exits.";
-        } else if (status === 'moderate') {
-            statusText.className = 'warning';
-            statusText.style.color = '#fbbf24';
-            statusText.innerHTML = "Status: Early smoke signatures detected by computer vision nodes.";
-            routeOutput.innerHTML = "[Warning Alert] Particulate matter rising.<br>-> Action: Re-evaluating optimal paths away from affected sector.";
-        } else {
-            statusText.className = 'danger';
-            statusText.innerHTML = "🚨 CRITICAL HAZARD: Heavy smoke/fire blockage detected!";
-            routeOutput.innerHTML = "[Emergency Lockout] Primary corridor BLOCKED.<br>-> Dynamic Rerouting Active: Pushing users toward Stairwell Exit C.";
+    async function checkIoTStatus() {
+        try {
+            let response = await fetch(FIREBASE_URL);
+            let statusValue = await response.json();
+            
+            const statusText = document.getElementById('statusText');
+            const routeOutput = document.getElementById('routeOutput');
+            const connStatus = document.getElementById('connStatus');
+
+            connStatus.innerHTML = "🟢 IoT Sensor Mesh Online (Synced with Cloud)";
+
+            if (statusValue === "clear") {
+                statusText.className = 'safe';
+                statusText.innerHTML = "Status: Normal operations. Standard dynamic routing active.";
+                routeOutput.innerHTML = "[Exopath Core Engine] All monitoring nodes stable.<br>-> Primary Path Active: Exit Gates 1 & 2 operating at 100% capacity.";
+            } else if (statusValue === "moderate") {
+                statusText.className = 'warning';
+                statusText.innerHTML = "Status: Early smoke signatures detected by computer vision edge nodes.";
+                routeOutput.innerHTML = "[Warning Alert] Particulate density rising in sector.<br>-> Automated Action: Pre-emptively calculating alternate vectors away from sector.";
+            } else if (statusValue === "critical") {
+                statusText.className = 'danger';
+                statusText.innerHTML = "🚨 CRITICAL HAZARD: Heavy smoke/fire obstruction confirmed by sensor!";
+                routeOutput.innerHTML = "[Emergency Protocol Engaged] Corridor BLOCKED.<br>-> Exopath Dynamic Router: Rerouting users instantly toward Stairwell Exit C.";
+            } else {
+                statusText.className = 'warning';
+                statusText.innerHTML = "Status: Unknown state received from hardware.";
+            }
+        } catch (error) {
+            document.getElementById('connStatus').innerHTML = "🔴 Error connecting to database stream.";
         }
     }
+
+    // Check the database every 2 seconds automatically
+    setInterval(checkIoTStatus, 2000);
+    checkIoTStatus(); // Run immediately on load
 </script>
 
 </body>
