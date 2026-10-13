@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ctrl_Alt_Evac | Emergency Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
+        .container { max-width: 800px; margin: auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        h1 { color: #38bdf8; text-align: center; }
+        .card { background: #334155; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        select, button { padding: 10px; font-size: 16px; border-radius: 5px; border: none; margin-top: 10px; width: 100%; }
+        select { background: #cbd5e1; color: #0f172a; font-weight: bold; }
+        .safe { color: #4ade80; font-weight: bold; }
+        .danger { color: #f87171; font-weight: bold; }
+        .box { background: #0f172a; padding: 15px; border-radius: 6px; margin-top: 15px; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚨 Ctrl_Alt_Evac</h1>
+    <p style="text-align: center; color: #94a3b8;">AI Indoor Emergency Routing & Hazard Response System</p>
+    
+    <div class="card">
+        <h3>Simulation Control Panel</h3>
+        <label>Select Building Zone:</label>
+        <select id="zoneSelect" onchange="updateSystem()">
+            <option value="zone1">Zone A: Main Lobby</option>
+            <option value="zone2">Zone B: West Wing Corridor</option>
+            <option value="zone3">Zone C: Underground Metro Concourse</option>
+        </select>
+
+        <label style="margin-top: 15px; display: block;">Simulate Hazard Status:</label>
+        <select id="statusSelect" onchange="updateSystem()">
+            <option value="clear">🟢 All Clear (Normal Operations)</option>
+            <option value="moderate">⚠️ Moderate Smoke Detected</option>
+            <option value="critical">🔥 Critical Hazard / Fire Blockage</option>
+        </select>
+    </div>
+
+    <div class="card">
+        <h3>Live System Output & Routing Map</h3>
+        <p id="statusText" class="safe">Status: Normal operations. Standard dynamic routing active.</p>
+        <div class="box" id="routeOutput">
+            [System Log] All zones clear.<br>
+            -> Standard Path Active: Exit Gate 1 & 2 open.
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateSystem() {
+        const zone = document.getElementById('zoneSelect').value;
+        const status = document.getElementById('statusSelect').value;
+        const statusText = document.getElementById('statusText');
+        const routeOutput = document.getElementById('routeOutput');
+
+        if (status === 'clear') {
+            statusText.className = 'safe';
+            statusText.innerHTML = "Status: Normal operations. Standard dynamic routing active.";
+            routeOutput.innerHTML = "[System Log] Zone monitoring normal.<br>-> Path Clear: Direct route to Main Exits.";
+        } else if (status === 'moderate') {
+            statusText.className = 'warning';
+            statusText.style.color = '#fbbf24';
+            statusText.innerHTML = "Status: Early smoke signatures detected by computer vision nodes.";
+            routeOutput.innerHTML = "[Warning Alert] Particulate matter rising.<br>-> Action: Re-evaluating optimal paths away from affected sector.";
+        } else {
+            statusText.className = 'danger';
+            statusText.innerHTML = "🚨 CRITICAL HAZARD: Heavy smoke/fire blockage detected!";
+            routeOutput.innerHTML = "[Emergency Lockout] Primary corridor BLOCKED.<br>-> Dynamic Rerouting Active: Pushing users toward Stairwell Exit C.";
+        }
+    }
+</script>
+
+</body>
+</html>
